@@ -1,0 +1,9 @@
+Coordinate	KEYWORD1
+VisionSystemClient	KEYWORD1
+Enes100	KEYWORD1
+ping	KEYWORD2
+begin	KEYWORD2
+updateLocation	KEYWORD2
+mission	KEYWORD2
+print	KEYWORD2
+println	KEYWORD2
