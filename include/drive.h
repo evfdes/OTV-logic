@@ -16,9 +16,12 @@ const int TURN_90_TIMES_MS = 850;
 
 
 // function declarations
-void initDrivepins();
+void initDrivePins();
 void setMotors(int leftSpeed, int rightSpeed);
+
+
 void moveForward();
+void moveBackward();
 void rotateCCW90();
 void rotateCW90();
 void stopMoving();

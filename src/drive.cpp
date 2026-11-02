@@ -10,17 +10,22 @@ void initDrivePins() {
 
 void setMotors (int leftSpeed, int rightSpeed) {
    //left motor control
-    digitalWrite(MOTOR_LEFT_DIR, leftSpeed > 0 ? HIGH : LOW);
+    digitalWrite(MOTOR_LEFT_DIR, leftSpeed >=0 ? HIGH : LOW);
     analogWrite(MOTOR_LEFT_PWM, abs(leftSpeed));
     
     //right motor control
-    digitalWrite(MOTOR_RIGHT_DIR, rightSpeed > 0 ? HIGH : LOW);
+    digitalWrite(MOTOR_RIGHT_DIR, rightSpeed >= 0 ? HIGH : LOW);
     analogWrite(MOTOR_RIGHT_PWM, abs(rightSpeed));
 }
 
 //move forward
 void moveForward() {
     setMotors(DRIVE_SPEED, DRIVE_SPEED);
+}
+
+//move backward
+void moveBackward() {
+    setMotors(-DRIVE_SPEED, -DRIVE_SPEED);
 }
 
 // rotate 90 degrees left back, right forward

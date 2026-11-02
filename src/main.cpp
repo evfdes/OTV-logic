@@ -1,1 +1,10 @@
-int y = 1
+#include <Arduino.h>
+#include "drive.h"
+
+void setup() {
+    initDrivePins();
+
+    moveForward();
+    delay(2000);
+    stopMoving();
+}
