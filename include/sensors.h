@@ -1,14 +1,12 @@
 //Ultrasonic Sensor Variables (Set as if we are using two Ultrasonic sensors)
+#pragma once
+#include <Arduino.h>
 
 int Ultrasonic_TRIG_PIN1 = 9;
 int Ultrasonic_ECHO_PIN1 = 11;
-duration1 = pulseIn(Ultrasonic_ECHO_PIN1, HIGH);
-distance1 = duration1 * 0.034/2;
 
 int Ultrasonic_TRIG_PIN2 = 10;
 int Ultrasonic_ECHO_PIN2 = 12;
-duration2 = pulseIn(Ultrasonic_ECHO_PIN2, HIGH);
-distance2 = duration2 * 0.034/2;
 
 //Active IR Sensor variables
 
@@ -31,4 +29,9 @@ int sensorValue6 = analogRead(FlameIR_OUTPUT4);
 //KW12-3 Switch Variables
 const int KW_pin1 = 0;
 const int KW_pin2 = 1;
-int state = limitSwitch.getState()
+
+void setupSensors();
+void getFrontDistance();
+void detectObstacleTest();
+void detectFlameTest();
+void detectObstacleInteractionTest();   
