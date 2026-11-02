@@ -31,4 +31,4 @@ int sensorValue6 = analogRead(FlameIR_OUTPUT4);
 //KW12-3 Switch Variables
 const int KW_pin1 = 0;
 const int KW_pin2 = 1;
-
+int state = limitSwitch.getState()

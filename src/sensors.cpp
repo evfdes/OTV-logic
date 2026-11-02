@@ -1,28 +1,25 @@
-long duration1;
-long duration2;
-float distance1;
-float distance2;
 
-void setup() {
-    //Pin modes set to Output
+    
+void getFrontDistance() {
+
+    long duration1;
+    long duration2;
+    float distance1;
+    float distance2;
+
+        //Pin modes set to Output
 
     pinMode(Ultrasonic_TRIG_PIN1, OUTPUT);
     pinMode(Ultrasonic_TRIG_PIN2, OUTPUT);
-    pinMode(ActiveIR_OUTPUT1, OUTPUT);
-    pinMode(ActiveIR_Output2, OUTPUT);
-    pinMode(FlameIR_OUTPUT1, OUTPUT);
-    pinMode(FlameIR_OUTPUT2, OUTPUT);
-    pinMode(FlameIR_OUTPUT3, OUTPUT);
-    pinMode(FlameIR_OUTPUT4, OUTPUT);
+        
 
-    //Pin modes set to Input
+        //Pin modes set to Input
 
     pinMode(Ultrasonic_ECHO_PIN1, INPUT);
     pinMode(Ultrasonic_ECHO_PIN2, INPUT);
-}
+    
 
-void loop() {
-    //Ultrasonic Sensor Code
+
 
     digitalWrite(Ultrasonic_TRIG_PIN1, LOW);
     digitalWrite(Ultrasonic_TRIG_PIN2, LOW);
@@ -35,14 +32,60 @@ void loop() {
     digitalWrite(Ultrasonic_TRIG_PIN2, LOW);
 
 
-    print("Distance 1: " + distance1 + "cm")
-    print("Distance 2: " + distance2 + "cm")
+    print("Distance 1: " + distance1 + "cm");
+    print("Distance 2: " + distance2 + "cm");
 
-    delay(300)
+    delay(300);
+
+        
+
+    }
 
 
-    //Active IR Distance Sensor Code 
+void detectObstacleTest() {
+    Serial.begin (9600);
 
-    digitalWrite()
+    Serial.print("Analog Value: ");
+    Serial.println(sensorValue1);
+    delay(200);
+    
+    //To test the other sensor, switch the value to print to sensorValue2
+}
+
+
+void detectFlameTest() {
+    Serial.begin(9600);
+
+    Serial.print("Analog Value: ");
+    Serial.println(sensorValue3);
+    delay(200)
+
+}
+
+
+void detectObstacleInteractionTest(){
+
+    //ezButton installation via ArduinoIDE required to run this code 
+    #include <ezButton.h>
+
+    ezButton limitSwitch(0);
+
+    Serial.begin(9600);
+    limitSwitch.setDebounceTime(50)
+
+    limitSwitch.loop();
+
+    if(limitSwitch.isPressed())
+        Serial.println("Untouched to Touched");
+
+    if(limitSwitch.isRelease())
+        Serial.println("Touched to Untouched");
+
+    if(state == HIGH)
+        Serial.println("Untouched")
+
+    if(state == LOW)
+        Serial.println("Touched")
+
 
 }
