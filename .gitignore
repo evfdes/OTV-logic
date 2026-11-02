@@ -1,0 +1,4 @@
+.pio/
+#Huge build output - specific to each computer, no need
+.vscode/
+#Contains path to your own computer, so ignore to not confuse other platformides
