@@ -8,3 +8,7 @@ void setup() {
     delay(2000);
     stopMoving();
 }
+
+void loop() {
+    // Your main code here
+}
