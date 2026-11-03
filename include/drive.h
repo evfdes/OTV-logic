@@ -1,30 +1,34 @@
-#ifndef DRIVE_H
-#define DRIVE_H
-
+#pragma once
 #include <Arduino.h>
 
 // H-Bridge motor pins
-const int MOTOR_LEFT_PWM = 5;
-const int MOTOR_LEFT_DIR = 4;
-const int MOTOR_RIGHT_PWM = 6;
-const int MOTOR_RIGHT_DIR = 7;
+constexpr uint8_t LEFT_MOTORS_PWM_PIN = 5;
+constexpr uint8_t LEFT_MOTORS_IN1_PIN = 7;
+constexpr uint8_t LEFT_MOTORS_IN2_PIN = 4;
 
-//Speed and timing constants 
-const int DRIVE_SPEED = 150; 
-const int TURN_SPEED  = 130;
-const int TURN_90_TIMES_MS = 850;
+constexpr uint8_t RIGHT_MOTORS_PWM_PIN = 6;
+constexpr uint8_t RIGHT_MOTORS_IN1_PIN = 8;
+constexpr uint8_t RIGHT_MOTORS_IN2_PIN = 9;
 
+// Drive speed constants
+constexpr int DRIVE_SPEED = 25;
+constexpr int TURN_SPEED = 25;
 
 // function declarations
 void initDrivePins();
 void setMotors(int leftSpeed, int rightSpeed);
 
-
 void moveForward();
 void moveBackward();
-void rotateCCW90();
+void stopMoving(); 
+
+void rotate(int degrees);
+
 void rotateCW90();
-void stopMoving();
+void rotateCCW90();
+void rotateCW45();
+void rotateCCW45();
 
-#endif 
-
+int getThetaDegrees();
+int angleError(int target, int current);
+unsigned long calculateTurnTimeMs(int degrees);

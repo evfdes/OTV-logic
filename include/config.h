@@ -3,3 +3,7 @@
 //Would take off pins 0 and 1 bc theyre the boards serial pins, don't wanna block uploads
 //
 
+#pragma once
+#include <Arduino.h>
+
+constexpr uint8_t KILL_SWITCH_PIN = ~5;

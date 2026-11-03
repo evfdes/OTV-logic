@@ -2,24 +2,22 @@
 #include <Arduino.h>
 
 //Ultrasonic Distance Sensor Pin Definitions
+constexpr uint8_t COMMON_ULTRASONIC_TRIG_PIN = 13;
 
-const byte pinDoUltraTrig = 9;
-
-const byte pinAiUltraEcho1 = A0;
-const byte pinAiUltraEcho2 = A1;
+constexpr uint8_t LEFT_ULTRASONIC_ECHO_PIN = A0;
+constexpr uint8_t RIGHT_ULTRASONIC_ECHO_PIN = A1;
 
 //Active IR Sensor Pin Definitions
-
-const byte pinDiActiveIR1 = 10;
-const byte pinDiActiveIR2 = 11;
+constexpr uint8_t LEFT_ACTIVE_IR_PIN = 2;
+constexpr uint8_t RIGHT_ACTIVE_IR_PIN = 3;
 
 //Flame IR Sensor Pin Definitions
-
-const byte pinAiFlameIR1 = A2;
-const byte pinAiFlameIR2 = A3;
-const byte pinAiFlameIR3 = A4;
-const byte pinAiFlameIR4 = A5;
+constexpr uint8_t TOP_FLAME_IR_PIN = A2;
+constexpr uint8_t BOTTOM_FLAME_IR_PIN = A3;
+constexpr uint8_t LEFT_FLAME_IR_PIN = A4;
+constexpr uint8_t RIGHT_FLAME_IR_PIN = A5;
 
 //KW12-3 Switch Pin Definitions
-const byte pinDoKW1 = 12;
-const byte pinDoKW2 = 13;
+constexpr uint8_t LEFT_KW12_3_PIN = 11;
+constexpr uint8_t RIGHT_KW12_3_PIN = 12;
+

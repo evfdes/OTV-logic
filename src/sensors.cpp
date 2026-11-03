@@ -1,11 +1,12 @@
 #include <Arduino.h>
 #include "sensors.h"
+
 long duration1;
 float distance1;    
 
 void setupSensors() {
     //Pin modes set to Output
-    pinMode(Ultrasonic_TRIG_PIN1, OUTPUT);
+    pinMode(, OUTPUT);
     pinMode(Ultrasonic_TRIG_PIN2, OUTPUT);
         
     //Pin modes set to Input
