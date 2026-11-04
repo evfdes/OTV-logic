@@ -64,6 +64,17 @@ void setMotors (int leftSpeed, int rightSpeed) {
    }
 }
 
+bool isMotionAllowed() {
+    if (!robotEnabled() || !Enes100.isConnected() || !Enes100.isVisible())
+        return false;
+
+    const float x = Enes100.getX(), y = Enes100.getY();
+    const float theta = Enes100.getTheta();
+    
+    return isfinite(x) && isfinite(y) && isfinite(theta) &&
+           x >= 0 && x <= ARENA_LENGTH_M && y >= 0 && y <= ARENA_WIDTH_M;
+}
+
 //move forward
 void moveForward() {
     setMotors(DRIVE_SPEED, DRIVE_SPEED);
