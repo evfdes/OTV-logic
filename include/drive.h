@@ -22,13 +22,22 @@ void moveForward();
 void moveBackward();
 void stopMoving(); 
 
-void rotate(int degrees);
-
-void rotateCW90();
-void rotateCCW90();
-void rotateCW45();
-void rotateCCW45();
+bool rotateTo(int targetDegrees);
+bool rotate(int degrees);
+    
+bool rotateCW90();
+bool rotateCCW90();
+bool rotateCW45();
+bool rotateCCW45();
 
 int getThetaDegrees();
+int normalizeAngle(int angle);
 int angleError(int target, int current);
-unsigned long calculateTurnTimeMs(int degrees);
+bool isMotionAllowed();
+void startRunTimer();
+int getDriveSpeed();
+void driveHeading(int headingDegrees, bool backwards = false, int speed = 0);
+bool moveTo(float x, float y, bool backwards = false,
+            bool (*stopCondition)() = nullptr);
+
+//unsigned long calculateTurnTimeMs(int degrees);

@@ -8,7 +8,7 @@ constexpr uint8_t LEFT_ULTRASONIC_ECHO_PIN = A0;
 constexpr uint8_t RIGHT_ULTRASONIC_ECHO_PIN = A1;
 
 //Active IR Sensor Pin Definitions
-constexpr uint8_t LEFT_ACTIVE_IR_PIN = 2;
+constexpr uint8_t LEFT_ACTIVE_IR_PIN = 10; //swapped with kill switch
 constexpr uint8_t RIGHT_ACTIVE_IR_PIN = 3;
 
 //Flame IR Sensor Pin Definitions

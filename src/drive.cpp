@@ -1,5 +1,22 @@
-#include "drive.h"
+#include <math.h>
 #include <Enes100.h>
+#include "config.h"
+#include "drive.h"
+#include "mission.h"
+#include "safety.h"
+
+namespace {
+    unsigned long runStartTime = 0;
+}
+
+void startRunTimer() {
+    runStartTime = millis();
+}
+
+int getDriveSpeed() {
+    return millis() - runStartTime >= RUN_DURATION_MS - HIGH_SPEED_WINDOW_MS ? FAST_DRIVE_SPEED : DRIVE_SPEED;
+}
+
 
 void setupMotors() {
     pinMode(LEFT_MOTORS_PWM_PIN, OUTPUT);
@@ -14,6 +31,16 @@ void setupMotors() {
 }
 
 void setMotors (int leftSpeed, int rightSpeed) {
+
+    if (!robotEnabled())
+        leftSpeed = rightSpeed = 0;
+
+    leftSpeed = constrain(leftSpeed, -255, 255);
+    rightSpeed = constrain(rightSpeed, -255, 255);
+
+    if (leftSpeed != 0 || rightSpeed != 0)
+        turnFanOff();
+
    //left motor control
    if (leftSpeed == 0){
         digitalWrite(LEFT_MOTORS_IN1_PIN, LOW);
@@ -47,74 +74,40 @@ void moveBackward() {
     setMotors(-DRIVE_SPEED, -DRIVE_SPEED);
 }
 
-void rotate(int degrees) {
-    if (degrees == 0) return;
-
-    // Verify vision is available
-    if (!Enes100.isConnected() || !Enes100.isVisible()) {
+bool rotateTo(int targetDegrees) {
+    stopMoving();
+    const unsigned long start = millis();
+    while (isMotionAllowed() && millis() - start < TURN_TIMEOUT_MS) {
+        const int error = angleError(normalizeAngle(targetDegrees), getThetaDegrees());
+        if (abs(error) <= HEADING_TOLERANCE_DEG) return true;
+        setMotors(error > 0 ? -TURN_SPEED : TURN_SPEED,
+                  error > 0 ? TURN_SPEED : -TURN_SPEED);
+        delay(20);
         stopMoving();
-        Serial.println("Error: ArUco unavailable");
-        return;
     }
-
-    int targetTheta = normalizeAngle(getThetaDegrees() + degrees);
-
-    for (int i = 0; i < 5; i++) {
-
-        if (!Enes100.isConnected() || !Enes100.isVisible()) {
-            stopMoving();
-            Serial.println("Error: ArUco lost");
-            return;
-        }
-
-        int currentTheta = getThetaDegrees();
-        int remainingDegrees = angleError(targetTheta, currentTheta);
-
-        if (std::fabs(remainingDegrees) <= 5) {
-            break;
-        }
-
-        unsigned long turnTimeMs = calculateTurnTimeMs(remainingDegrees);
-
-        // Positive angles assumed CCW
-        if (remainingDegrees > 0) {
-            setMotors(-TURN_SPEED, TURN_SPEED);
-        } else {
-            setMotors(TURN_SPEED, -TURN_SPEED);
-        }
-
-        delay(turnTimeMs);
-        stopMoving();
-
-        // Allow the robot to settle and vision to update
-        delay(300);
-    }
-
-    Serial.println("Final turn error: " + String(angleError(targetTheta, getThetaDegrees())));
-    if (std::fabs(angleError(targetTheta, getThetaDegrees())) > 5) {
-        Serial.println("Turn did not reach target tolerance");
-    }
+    stopMoving();
+    return false;
 }
 
-void rotateTo(int targetDegrees) {
-    int current = getThetaDegrees();
-    rotate(angleError(normalizeAngle(targetDegrees), current));
+bool rotate(int degrees) {
+    if (!isMotionAllowed()) { stopMoving(); return false; }
+    return rotateTo(getThetaDegrees() + degrees);
 }
 
-void rotateCW90() {
-    rotate(-90);
+bool rotateCW90() {
+    return rotate(-90);
 }
 
-void rotateCCW90() {
-    rotate(90);
+bool rotateCCW90() {
+    return rotate(90);
 }
 
-void rotateCW45() {
-    rotate(-45);
+bool rotateCW45() {
+    return rotate(-45);
 }
 
-void rotateCCW45() {
-    rotate(45);
+bool rotateCCW45() {
+    return rotate(45);
 }
 
 void stopMoving() {
@@ -133,15 +126,51 @@ int getThetaDegrees() {
     return static_cast<int>(Enes100.getTheta() * 180.0f / PI);
 }
 
-unsigned long calculateTurnTimeMs(int degrees) {
-    // Calculate the time required to turn the specified number of degrees based on the robot's geometry and wheel RPM.
+void driveHeading(int headingDegrees, bool backwards, int speed) {
+    const int error = angleError(headingDegrees, getThetaDegrees());
 
-    //t = (degrees * track_width) / (12 * wheel_radius * wheel_rpm)
-    float wheelRadiusCM = 5.0f;
-    float wheelDistanceCM = 8.5f;
-    float turnWheelRPM = 20.0f;
+    if (speed == 0)
+        speed = getDriveSpeed();
 
-    float seconds = (abs(degrees) * wheelDistanceCM) / (12.0f * wheelRadiusCM * turnWheelRPM);
+    const int correction = constrain(error, -speed / 2, speed / 2);
+    const int direction = backwards ? -speed : speed;
 
-    return static_cast<unsigned long>(seconds * 1000.0f);
+    setMotors(direction - correction, direction + correction);
+}
+
+bool moveTo(float x, float y, bool backwards, bool (*stopCondition)()) {
+    stopMoving();
+    if (!isMotionAllowed())
+        return false;
+    
+    const float travelX = x - Enes100.getX(), travelY = y - Enes100.getY();
+    const unsigned long start = millis();
+
+    while (isMotionAllowed() && millis() - start < MOVE_TIMEOUT_MS) {
+        if (stopCondition && stopCondition()) {
+            stopMoving();
+            return isMotionAllowed();
+        }
+
+        const float dx = x - Enes100.getX(), dy = y - Enes100.getY();
+
+        if (dx * dx + dy * dy <= POSITION_TOLERANCE_M * POSITION_TOLERANCE_M || dx * travelX + dy * travelY <= 0) {
+            stopMoving();
+            return true;
+        }
+
+        const int heading = normalizeAngle(lroundf(atan2f(dy, dx) * 180.0f / PI) + (backwards ? 180 : 0));
+        
+        if (abs(angleError(heading, getThetaDegrees())) > HEADING_TOLERANCE_DEG * 2) {
+            if (!rotateTo(heading))
+                return false;
+        } else {
+            // Reduce speed near a waypoint to avoid overshooting after the boost.
+            const int speed = constrain(static_cast<int>(sqrtf(dx * dx + dy * dy) * 1000), DRIVE_SPEED, getDriveSpeed());
+            driveHeading(heading, backwards, speed);
+            delay(20);
+        }
+    }
+    stopMoving();
+    return false;
 }

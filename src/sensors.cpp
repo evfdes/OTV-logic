@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "config.h"
 #include "sensors.h"
 
 void setupSensors() {
@@ -25,6 +26,11 @@ void setupSensors() {
 }
 
 int getFrontDistance() {
+
+    static unsigned long lastTrigger = 0;
+    const unsigned long elapsed = millis() - lastTrigger;
+    if (elapsed < 60) delay(60 - elapsed);
+    lastTrigger = millis();
 
     digitalWrite(COMMON_ULTRASONIC_TRIG_PIN, LOW);
     delayMicroseconds(2);
@@ -61,24 +67,14 @@ int getFrontDistance() {
         }
     }
 
-    unsigned long totalDuration = 0;
-    int validCount = 0;
-
-    if (leftState == 2) {
-        totalDuration += leftDuration;
-        validCount++;
-    }
-
-    if (rightState == 2) {
-        totalDuration += rightDuration;
-        validCount++;
-    }
-
-    if (validCount == 0)
+    if (leftState != 2 && rightState != 2)
         return -1;
-
-    unsigned long avgDuration = totalDuration / validCount;
-    return (avgDuration * 343UL + 10000UL) / 20000UL;
+    
+    // Either front sensor can see a blocking obstacle; use the nearer echo.
+    const unsigned long duration = leftState != 2 ? rightDuration :
+        rightState != 2 ? leftDuration : min(leftDuration, rightDuration);
+    
+        return (duration * 343UL + 10000UL) / 20000UL;
 }
 
 boolean isLeftObstacleDetected() {
@@ -106,7 +102,7 @@ boolean isPayloadTouched() {
     }
 }
 
-boolean isFlameDetected() {
+int countFlamesDetected() {
     int topFlameValue = analogRead(TOP_FLAME_IR_PIN);
     int bottomFlameValue = analogRead(BOTTOM_FLAME_IR_PIN);
     int leftFlameValue = analogRead(LEFT_FLAME_IR_PIN);
@@ -117,22 +113,15 @@ boolean isFlameDetected() {
     Serial.println("Left Flame Analog value: " + String(leftFlameValue));
     Serial.println("Right Flame Analog value: " + String(rightFlameValue));
 
-    if (topFlameValue < 800 || bottomFlameValue < 800 || leftFlameValue < 800 || rightFlameValue < 800)
-        return true;
-    return false;
-}
-
-int countFlamesDetected() {
-    int topFlameValue = analogRead(TOP_FLAME_IR_PIN);
-    int bottomFlameValue = analogRead(BOTTOM_FLAME_IR_PIN);
-    int leftFlameValue = analogRead(LEFT_FLAME_IR_PIN);
-    int rightFlameValue = analogRead(RIGHT_FLAME_IR_PIN);
-
     int count = 0;
-    if (topFlameValue < 800) count++;
-    if (bottomFlameValue < 800) count++;
-    if (leftFlameValue < 800) count++;
-    if (rightFlameValue < 800) count++;
+    if (topFlameValue < FLAME_THRESHOLD) count++;
+    if (bottomFlameValue < FLAME_THRESHOLD) count++;
+    if (leftFlameValue < FLAME_THRESHOLD) count++;
+    if (rightFlameValue < FLAME_THRESHOLD) count++;
 
     return count;
+}
+
+boolean isFlameDetected() {
+    return countFlamesDetected() > 0;
 }
