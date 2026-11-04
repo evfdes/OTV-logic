@@ -2,3 +2,8 @@
 #Huge build output - specific to each computer, no need
 .vscode/
 #Contains path to your own computer, so ignore to not confuse other platformides
+.DS_Store
+src/.DS_Store
+include/.DS_Store
+src/.DS_Store
+include/.DS_Store
