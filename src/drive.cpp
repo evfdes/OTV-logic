@@ -1,7 +1,7 @@
 #include "drive.h"
 #include <Enes100.h>
 
-void initDrivePins() {
+void setupMotors() {
     pinMode(LEFT_MOTORS_PWM_PIN, OUTPUT);
     pinMode(LEFT_MOTORS_IN1_PIN, OUTPUT);
     pinMode(LEFT_MOTORS_IN2_PIN, OUTPUT);
@@ -57,7 +57,7 @@ void rotate(int degrees) {
         return;
     }
 
-    int targetTheta = static_cast<int>(std::fmod(getThetaDegrees() + std::fmod(degrees, 360.0) + 360.0, 360.0));
+    int targetTheta = normalizeAngle(getThetaDegrees() + degrees);
 
     for (int i = 0; i < 5; i++) {
 
@@ -96,20 +96,25 @@ void rotate(int degrees) {
     }
 }
 
-void rotateCW90() {
-    rotate(90);
+void rotateTo(int targetDegrees) {
+    int current = getThetaDegrees();
+    rotate(angleError(normalizeAngle(targetDegrees), current));
 }
 
-void rotateCCW90() {
+void rotateCW90() {
     rotate(-90);
 }
 
+void rotateCCW90() {
+    rotate(90);
+}
+
 void rotateCW45() {
-    rotate(45);
+    rotate(-45);
 }
 
 void rotateCCW45() {
-    rotate(-45);
+    rotate(45);
 }
 
 void stopMoving() {

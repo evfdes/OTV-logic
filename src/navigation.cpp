@@ -1,22 +1,16 @@
+#include <Arduino.h>
 #include "navigation.h"
-#include "../lib/ENES100/src/VisionSystemClient.hpp"
+#include "Enes100.h"
+#include "drive.cpp"
 
-void navigateTo(int x, int y) {
-    // Implementation of navigation logic goes here
-}
+void turnToPayload() {
+    int startTheta = getThetaDegrees();
 
-void navigateTo(int x, int y, int speed) {
-    // Implementation of navigation logic goes here
-}
-
-int getCurrentX() {
-    return getCurrentX();
-}
-
-int getCurrentY() {
-    return getCurrentY();
-}
-
-int getTheta() {
-    return getTheta();
+    if (startedAtBottom()) {
+        int payloadThetaDegrees = 90;
+        rotateTo(payloadThetaDegrees);
+    } else {
+        int payloadThetaDegrees = 270;
+        rotateTo(payloadThetaDegrees);
+    }
 }

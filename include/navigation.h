@@ -1,9 +1,9 @@
 #pragma once
 #include <Arduino.h>
 
-void navigateTo(int x, int y);
-void navigateTo(int x, int y, int speed);
+inline bool startedAtBottom() {
+    static const bool startBottom = (Enes100.getY() < 1.0);
+    return startBottom;
+}
 
-int getCurrentX();
-int getCurrentY();
-int getTheta();
+void turnToPayload();

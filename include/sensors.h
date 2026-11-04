@@ -21,3 +21,10 @@ constexpr uint8_t RIGHT_FLAME_IR_PIN = A5;
 constexpr uint8_t LEFT_KW12_3_PIN = 11;
 constexpr uint8_t RIGHT_KW12_3_PIN = 12;
 
+void setupSensors();
+int getFrontDistance();
+boolean isLeftObstacleDetected();
+boolean isRightObstacleDetected();
+boolean isPayloadTouched();
+boolean isFlameDetected();
+int countFlamesDetected();
