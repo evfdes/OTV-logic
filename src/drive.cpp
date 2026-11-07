@@ -18,7 +18,7 @@ int getDriveSpeed() {
 }
 
 
-void setupMotors() {
+void initDrivePins() {
     pinMode(LEFT_MOTORS_PWM_PIN, OUTPUT);
     pinMode(LEFT_MOTORS_IN1_PIN, OUTPUT);
     pinMode(LEFT_MOTORS_IN2_PIN, OUTPUT);
