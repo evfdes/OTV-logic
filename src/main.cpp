@@ -8,6 +8,16 @@
 #include "safety.h"
 #include "sensors.h"
 
+// Ensure the safety setup routine is declared before it is called.
+void setupSafety();
+void inhibitRobotPower();
+void enableRobotPower();
+void updateSafety();
+bool robotEnabled();
+void enableIdlePower();
+void missionStartReady();
+void disableRobotPower();
+
 // Only start when the camera is connected and can see a valid marker position.
 bool visionReady() {
     if (!Enes100.isConnected() || !Enes100.isVisible())
@@ -46,7 +56,8 @@ void loop() {
         enableIdlePower();
     }
 
-    if (!missionStartReady() || !visionReady()) {
+    missionStartReady();
+    if (!visionReady()) {
         delay(20);
         return;
     }
