@@ -3,7 +3,10 @@
 #include "config.h"
 #include "drive.h"
 #include "mission.h"
+
 #include "safety.h"
+
+bool robotEnabled();
 
 namespace {
     unsigned long runStartTime = 0;
@@ -169,7 +172,6 @@ bool moveTo(float x, float y, bool backwards, bool (*stopCondition)()) {
             stopMoving();
             return true;
         }
-src/drive.cpp
         const int heading = normalizeAngle(lroundf(atan2f(dy, dx) * 180.0f / PI) + (backwards ? 180 : 0));
         
         if (abs(angleError(heading, getThetaDegrees())) > HEADING_TOLERANCE_DEG * 2) {
