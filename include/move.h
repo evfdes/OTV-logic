@@ -18,10 +18,11 @@ constexpr int TURN_SPEED = 25;
 // function declarations
 void initDrivePins();
 void setMotors(int leftSpeed, int rightSpeed);
+void stopMoving() { setMotors(0, 0); }
+
 
 void moveForward();
 void moveBackward();
-void stopMoving(); 
 
 
 int getThetaDegrees();
